@@ -8,6 +8,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.os.Build;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,6 +19,9 @@ import android.view.ViewParent;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
+
+import com.aibei.lixue.bouncingmenu.R;
+import com.aibei.lixue.bouncingmenu.RcyclerAdapter;
 
 /**
  * 自定义控件--弹跳菜单
@@ -31,7 +36,7 @@ public class BoucingMenu extends View{
     private Path mPath = new Path();//路径类
     private Paint mPaint = new Paint();//画笔
     private int arcHeight;
-    private int maxArcHeight = 320;
+    private int maxArcHeight = 200;
     private Status mStatus = Status.NONE;
 
     /**
@@ -75,6 +80,10 @@ public class BoucingMenu extends View{
         rootView = (RelativeLayout)LayoutInflater.from(getContext()).inflate(resId,null);
         Log.i(TAG,"视图的根布局是:" + rootView);
         mParentVG.addView(rootView,lp);
+        //开始初始化recyclerView的数据
+        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.menu_recycler);
+        recyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
+        recyclerView.setAdapter(new RcyclerAdapter(rootView.getContext()));
     }
 
     public static BoucingMenu make(Context mContext,View view, int resId){
@@ -83,6 +92,7 @@ public class BoucingMenu extends View{
 
     public void show(){
         rootView.addView(this);
+        runAnimation();
     }
 
     /**
@@ -138,37 +148,43 @@ public class BoucingMenu extends View{
         }
         mPath.moveTo(0,(getHeight()-rootView.getChildAt(0).getHeight()));//p0
         //x1,y1为控制点，x2,y2为结束点
-        mPath.quadTo(getWidth()/2,getHeight()-rootView.getChildAt(0).getHeight() - currentPointY,getWidth(),getHeight()-rootView.getChildAt(0).getHeight());
+        mPath.quadTo((getWidth()/2-maxArcHeight),getHeight()-rootView.getChildAt(0).getHeight() - currentPointY,getWidth(),getHeight()-rootView.getChildAt(0).getHeight());
         mPath.lineTo(getWidth(),getHeight());
         mPath.lineTo(0,getHeight());
         mPath.close();
         Log.i(TAG,"rootView的高度:" + rootView.getHeight());
         Log.i(TAG,"currentPointY:" + currentPointY);
         Log.i(TAG,"第一个点:0," + (getHeight()-rootView.getChildAt(0).getHeight()));
-        Log.i(TAG,"第二个点:" + (getWidth()/2) +"," + (getHeight()-rootView.getChildAt(0).getHeight() + currentPointY)+"," +getWidth() + "," + getWidth() +"," +(getHeight()-rootView.getChildAt(0).getHeight()));
+        Log.i(TAG,"第二个点:" + (getWidth()/2-maxArcHeight) +"," + (getHeight()-rootView.getChildAt(0).getHeight() + currentPointY)+"," +getWidth() + "," + getWidth() +"," +(getHeight()-rootView.getChildAt(0).getHeight()));
         Log.i(TAG,"第三个点:" + getWidth()+"," + getHeight());
         Log.i(TAG,"第四个点:0," + getHeight());
 
         canvas.drawPath(mPath,mPaint);
+
+    }
+
+    //执行动画
+    private void runAnimation(){
         ValueAnimator valueAnimator = ValueAnimator.ofInt(0,maxArcHeight);
+        valueAnimator.setDuration(3000);
         valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                arcHeight = (int) valueAnimator.getAnimatedValue();
+            public void onAnimationUpdate(ValueAnimator vAnimator) {
+                maxArcHeight = (int) vAnimator.getAnimatedValue();
+                Log.i("acrHeight","onAnimationUpdate,arcHeight:" + maxArcHeight);
                 mStatus = Status.STATUS_SMOOTH_UP;
-//                if (arcHeight == maxArcHeight){
+//                if (maxArcHeight == 200){
 //                    //往下弹
 //                    bouce();
 //                }
                 invalidate();
             }
         });
-        valueAnimator.setDuration(3000);
-        valueAnimator.setInterpolator(new OvershootInterpolator(4f));
+        valueAnimator.setInterpolator(new OvershootInterpolator(0.4f));
         valueAnimator.start();
     }
 
-    private void bouce(){
+    public void bouce(){
         mParentVG.removeView(rootView);
     }
 }
