@@ -18,7 +18,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-import android.view.animation.BounceInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
@@ -183,7 +182,7 @@ public class BoucingMenu extends View{
         mStartPointY = (getHeight()-rootView.getChildAt(0).getHeight());
         mEndPointX = getWidth();
         mEndPointY = getHeight()-rootView.getChildAt(0).getHeight();
-        mControlPointX = (getWidth()/2-maxArcHeight);
+        mControlPointX = (getWidth()/2-arcHeight);
         mControlPointY = getHeight()-rootView.getChildAt(0).getHeight() - currentPointY;
         mPath.moveTo(mStartPointX,mStartPointY);//p0
         //x1,y1为控制点，x2,y2为结束点
@@ -211,6 +210,7 @@ public class BoucingMenu extends View{
             @Override
             public void onAnimationUpdate(ValueAnimator vAnimator) {
                 arcHeight = (int) vAnimator.getAnimatedValue();
+
                 Log.i("acrHeight","onAnimationUpdate,arcHeight:" + arcHeight);
                 animationListener.onContentShow();
                 if (arcHeight == maxArcHeight){
@@ -226,9 +226,10 @@ public class BoucingMenu extends View{
     }
 
     public void bouce(){
-        ObjectAnimator animator = ObjectAnimator.ofFloat(rootView, "alpha", 1.0f, 0f);
-        animator.setDuration(100);//动画时间
-        animator.setInterpolator(new BounceInterpolator());//动画插值
+        ObjectAnimator animator = ObjectAnimator.ofFloat(rootView, "alpha", 1.0f,0.8f,0.6f,0.4f,0.2f, 0f);
+        animator.setDuration(300);//动画时间
+        animator.setInterpolator(new OvershootInterpolator());//动画插值
+        animator.setStartDelay(1000);//动画延时执行
         animator.start();//启动动画
         animator.addListener(new Animator.AnimatorListener() {
            @Override
