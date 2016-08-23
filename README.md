@@ -15,8 +15,7 @@ BoucingMenu.make(getBaseContext(),main_layout,R.layout.menu_boucing).show();
 ```
 
 ### 引申
-    本例最主要的是如何得到`DecorView`，通过android源码我们知道`DecorView`是`Activity`布局中最外层的一个布局，而我们真正意义上的xml中书写的布局都是它的Child<\br>
+本例最主要的是如何得到`DecorView`，通过android源码我们知道`DecorView`是`Activity`布局中最外层的一个布局，而我们真正意义上的xml中书写的布局都是它的Child<\br>
     
-    画出的曲线用到的是贝塞尔曲线
+画出的曲线用到的是贝塞尔曲线
     
-   
