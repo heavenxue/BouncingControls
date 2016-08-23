@@ -45,6 +45,6 @@
 ```
     
 画出的曲线用到的是贝塞尔曲线，画曲线那么这里利用了`path.quarTo();`,想见更多关于贝塞尔曲线，那么请移步</br>
---[Bezier](https://github.com/heavenxue/AsLixueAndroids/blob/master/app/src/main/java/com/aibei/lixue/lixueandroids/samples/libSamples/bezier/MainActivity.java)
+--[Bezier--https://github.com/heavenxue/AsLixueAndroids/blob/master/lixuelib/src/main/java/com/aibei/lixue/lixuelib/view/PathBezier.java](https://github.com/heavenxue/AsLixueAndroids/blob/master/lixuelib/src/main/java/com/aibei/lixue/lixuelib/view/PathBezier.java)
 
     
