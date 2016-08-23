@@ -1,5 +1,7 @@
 package com.aibei.lixue.bouncingmenu.widget;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -16,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.view.animation.BounceInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
@@ -38,6 +41,16 @@ public class BoucingMenu extends View{
     private int arcHeight;
     private int maxArcHeight = 200;
     private Status mStatus = Status.NONE;
+    private AnimationListener animationListener;
+    private RecyclerView recyclerView;
+
+    int mStartPointX = 0;
+    int mStartPointY = 0;
+    int mEndPointX = 0;
+    int mEndPointY = 0;
+    int mControlPointX = 0;
+    int mControlPointY = 0;
+
 
     /**
      * 构造函数
@@ -81,7 +94,7 @@ public class BoucingMenu extends View{
         Log.i(TAG,"视图的根布局是:" + rootView);
         mParentVG.addView(rootView,lp);
         //开始初始化recyclerView的数据
-        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.menu_recycler);
+        recyclerView = (RecyclerView) rootView.findViewById(R.id.menu_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
         recyclerView.setAdapter(new RcyclerAdapter(rootView.getContext()));
     }
@@ -91,6 +104,26 @@ public class BoucingMenu extends View{
     }
 
     public void show(){
+        animationListener = new AnimationListener() {
+            @Override
+            public void onStart() {
+                recyclerView.setVisibility(GONE);
+                mStatus = Status.NONE;
+            }
+
+            @Override
+            public void onEnd() {
+                clearAnimation();
+                Log.i(TAG,"动画结束...");
+                mStatus = Status.STATUS_DOWN;
+            }
+
+            @Override
+            public void onContentShow() {
+                recyclerView.setVisibility(VISIBLE);
+                mStatus = Status.STATUS_SMOOTH_UP;
+            }
+        };
         rootView.addView(this);
         runAnimation();
     }
@@ -140,24 +173,30 @@ public class BoucingMenu extends View{
                 currentPointY = maxArcHeight;
                 break;
             case STATUS_SMOOTH_UP:
-                currentPointY = getHeight() -(getHeight() - maxArcHeight * Math.min(1,(arcHeight - maxArcHeight/4)));
+                currentPointY = rootView.getChildAt(0).getHeight() -(rootView.getChildAt(0).getHeight() - maxArcHeight * Math.min(1,(arcHeight - maxArcHeight/4)));
                 break;
             case STATUS_DOWN:
-                currentPointY = maxArcHeight;
+                currentPointY = arcHeight - maxArcHeight;
                 break;
         }
-        mPath.moveTo(0,(getHeight()-rootView.getChildAt(0).getHeight()));//p0
+        mStartPointX = 0;
+        mStartPointY = (getHeight()-rootView.getChildAt(0).getHeight());
+        mEndPointX = getWidth();
+        mEndPointY = getHeight()-rootView.getChildAt(0).getHeight();
+        mControlPointX = (getWidth()/2-maxArcHeight);
+        mControlPointY = getHeight()-rootView.getChildAt(0).getHeight() - currentPointY;
+        mPath.moveTo(mStartPointX,mStartPointY);//p0
         //x1,y1为控制点，x2,y2为结束点
-        mPath.quadTo((getWidth()/2-maxArcHeight),getHeight()-rootView.getChildAt(0).getHeight() - currentPointY,getWidth(),getHeight()-rootView.getChildAt(0).getHeight());
-        mPath.lineTo(getWidth(),getHeight());
-        mPath.lineTo(0,getHeight());
+        mPath.quadTo(mControlPointX,mControlPointY,mEndPointX,mEndPointY);
+        mPath.lineTo(getWidth(),getHeight()-rootView.getChildAt(0).getHeight());
+        mPath.lineTo(0,getHeight()-rootView.getChildAt(0).getHeight());
         mPath.close();
         Log.i(TAG,"rootView的高度:" + rootView.getHeight());
         Log.i(TAG,"currentPointY:" + currentPointY);
-        Log.i(TAG,"第一个点:0," + (getHeight()-rootView.getChildAt(0).getHeight()));
-        Log.i(TAG,"第二个点:" + (getWidth()/2-maxArcHeight) +"," + (getHeight()-rootView.getChildAt(0).getHeight() + currentPointY)+"," +getWidth() + "," + getWidth() +"," +(getHeight()-rootView.getChildAt(0).getHeight()));
-        Log.i(TAG,"第三个点:" + getWidth()+"," + getHeight());
-        Log.i(TAG,"第四个点:0," + getHeight());
+        Log.i(TAG,"第一个点:0," + mStartPointY);
+        Log.i(TAG,"第二个点:" + mControlPointX +"," + mControlPointY+"," + mEndPointX + "," + mEndPointY);
+        Log.i(TAG,"第三个点:" + getWidth()+"," + (getHeight()-rootView.getChildAt(0).getHeight()));
+        Log.i(TAG,"第四个点:0," + (getHeight()-rootView.getChildAt(0).getHeight()));
 
         canvas.drawPath(mPath,mPaint);
 
@@ -166,25 +205,57 @@ public class BoucingMenu extends View{
     //执行动画
     private void runAnimation(){
         ValueAnimator valueAnimator = ValueAnimator.ofInt(0,maxArcHeight);
-        valueAnimator.setDuration(3000);
+        valueAnimator.setDuration(1000);
+        animationListener.onStart();
         valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator vAnimator) {
-                maxArcHeight = (int) vAnimator.getAnimatedValue();
-                Log.i("acrHeight","onAnimationUpdate,arcHeight:" + maxArcHeight);
-                mStatus = Status.STATUS_SMOOTH_UP;
-//                if (maxArcHeight == 200){
-//                    //往下弹
-//                    bouce();
-//                }
+                arcHeight = (int) vAnimator.getAnimatedValue();
+                Log.i("acrHeight","onAnimationUpdate,arcHeight:" + arcHeight);
+                animationListener.onContentShow();
+                if (arcHeight == maxArcHeight){
+                    //往下弹
+                    bouce();
+
+                }
                 invalidate();
             }
         });
-        valueAnimator.setInterpolator(new OvershootInterpolator(0.4f));
+        valueAnimator.setInterpolator(new OvershootInterpolator(0.8f));
         valueAnimator.start();
     }
 
     public void bouce(){
-        mParentVG.removeView(rootView);
+        ObjectAnimator animator = ObjectAnimator.ofFloat(rootView, "alpha", 1.0f, 0f);
+        animator.setDuration(100);//动画时间
+        animator.setInterpolator(new BounceInterpolator());//动画插值
+        animator.start();//启动动画
+        animator.addListener(new Animator.AnimatorListener() {
+           @Override
+           public void onAnimationStart(Animator animator) {
+
+           }
+
+           @Override
+           public void onAnimationEnd(Animator animator) {
+               mParentVG.removeView(rootView);
+               animationListener.onEnd();
+           }
+
+           @Override
+           public void onAnimationCancel(Animator animator) {
+
+           }
+
+           @Override
+           public void onAnimationRepeat(Animator animator) {
+
+           }
+       });
+    }
+    interface  AnimationListener{
+        void onStart();
+        void onEnd();
+        void onContentShow();
     }
 }
