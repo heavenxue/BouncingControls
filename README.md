@@ -12,8 +12,9 @@
 ![github](https://github.com/heavenxue/BouncingMenu/raw/master/doc/shoot.png "github")
 
 ### 使用
+
 ``` java
-BoucingMenu.make(getBaseContext(),main_layout,R.layout.menu_boucing).show();
+    BoucingMenu.make(getBaseContext(),main_layout,R.layout.menu_boucing).show();
 ```
 
 ### 引申
