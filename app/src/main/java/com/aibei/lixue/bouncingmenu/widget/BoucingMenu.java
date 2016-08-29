@@ -18,7 +18,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-import android.view.animation.OvershootInterpolator;
+import android.view.animation.AnticipateInterpolator;
+import android.view.animation.AnticipateOvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
@@ -29,7 +30,7 @@ import com.aibei.lixue.bouncingmenu.RcyclerAdapter;
  * 自定义控件--弹跳菜单
  * Created by Administrator on 2016/8/22.
  */
-public class BoucingMenu extends View{
+public class BoucingMenu extends View {
     private static final String TAG = BoucingMenu.class.getSimpleName();
     private View view;
     private int resId;
@@ -37,7 +38,7 @@ public class BoucingMenu extends View{
     private RelativeLayout rootView;
     private Path mPath = new Path();//路径类
     private Paint mPaint = new Paint();//画笔
-    private int arcHeight;
+    private int arcHeight = 0;
     private int maxArcHeight = 200;
     private Status mStatus = Status.NONE;
     private AnimationListener animationListener;
@@ -89,7 +90,7 @@ public class BoucingMenu extends View{
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,FrameLayout.LayoutParams.WRAP_CONTENT);
         //找到DecorView的跟布局
         mParentVG = findSuitableParent(view);
-        rootView = (RelativeLayout)LayoutInflater.from(getContext()).inflate(resId,null);
+        rootView = (RelativeLayout) LayoutInflater.from(getContext()).inflate(resId,null,false);
         Log.i(TAG,"视图的根布局是:" + rootView);
         mParentVG.addView(rootView,lp);
         //开始初始化recyclerView的数据
@@ -182,7 +183,7 @@ public class BoucingMenu extends View{
         mStartPointY = (getHeight()-rootView.getChildAt(0).getHeight());
         mEndPointX = getWidth();
         mEndPointY = getHeight()-rootView.getChildAt(0).getHeight();
-        mControlPointX = (getWidth()/2-arcHeight);
+        mControlPointX = (getWidth()/2);
         mControlPointY = getHeight()-rootView.getChildAt(0).getHeight() - currentPointY;
         mPath.moveTo(mStartPointX,mStartPointY);//p0
         //x1,y1为控制点，x2,y2为结束点
@@ -216,43 +217,43 @@ public class BoucingMenu extends View{
                 if (arcHeight == maxArcHeight){
                     //往下弹
                     bouce();
-
                 }
                 invalidate();
             }
         });
-        valueAnimator.setInterpolator(new OvershootInterpolator(0.8f));
+
+        valueAnimator.setInterpolator(new AnticipateOvershootInterpolator(0.4f));
         valueAnimator.start();
     }
 
     public void bouce(){
         ObjectAnimator animator = ObjectAnimator.ofFloat(rootView, "alpha", 1.0f,0.8f,0.6f,0.4f,0.2f, 0f);
         animator.setDuration(300);//动画时间
-        animator.setInterpolator(new OvershootInterpolator());//动画插值
+        animator.setInterpolator(new AnticipateInterpolator());//动画插值
         animator.setStartDelay(1000);//动画延时执行
         animator.start();//启动动画
         animator.addListener(new Animator.AnimatorListener() {
-           @Override
-           public void onAnimationStart(Animator animator) {
+            @Override
+            public void onAnimationStart(Animator animator) {
 
-           }
+            }
 
-           @Override
-           public void onAnimationEnd(Animator animator) {
-               mParentVG.removeView(rootView);
-               animationListener.onEnd();
-           }
+            @Override
+            public void onAnimationEnd(Animator animator) {
+                mParentVG.removeView(rootView);
+                animationListener.onEnd();
+            }
 
-           @Override
-           public void onAnimationCancel(Animator animator) {
+            @Override
+            public void onAnimationCancel(Animator animator) {
 
-           }
+            }
 
-           @Override
-           public void onAnimationRepeat(Animator animator) {
+            @Override
+            public void onAnimationRepeat(Animator animator) {
 
-           }
-       });
+            }
+        });
     }
     interface  AnimationListener{
         void onStart();
