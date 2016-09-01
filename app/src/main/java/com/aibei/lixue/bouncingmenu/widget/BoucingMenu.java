@@ -19,7 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.animation.AnticipateInterpolator;
-import android.view.animation.AnticipateOvershootInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
@@ -183,7 +183,7 @@ public class BoucingMenu extends View {
         mStartPointY = (getHeight()-rootView.getChildAt(0).getHeight());
         mEndPointX = getWidth();
         mEndPointY = getHeight()-rootView.getChildAt(0).getHeight();
-        mControlPointX = (getWidth()/2);
+        mControlPointX = (getWidth()/2) -currentPointY;
         mControlPointY = getHeight()-rootView.getChildAt(0).getHeight() - currentPointY;
         mPath.moveTo(mStartPointX,mStartPointY);//p0
         //x1,y1为控制点，x2,y2为结束点
@@ -205,7 +205,7 @@ public class BoucingMenu extends View {
     //执行动画
     private void runAnimation(){
         ValueAnimator valueAnimator = ValueAnimator.ofInt(0,maxArcHeight);
-        valueAnimator.setDuration(1000);
+        valueAnimator.setDuration(400);
         animationListener.onStart();
         valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -222,7 +222,7 @@ public class BoucingMenu extends View {
             }
         });
 
-        valueAnimator.setInterpolator(new AnticipateOvershootInterpolator(0.4f));
+        valueAnimator.setInterpolator(new OvershootInterpolator(0.4f));
         valueAnimator.start();
     }
 
