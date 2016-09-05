@@ -10,43 +10,5 @@
 
 ### 效果图：
 ![github](https://github.com/heavenxue/BouncingMenu/raw/master/doc/shoot.png "github")
+![github](https://github.com/heavenxue/BouncingMenu/raw/master/doc/BouceProgressBar.gif "github")
 
-### 使用
-
-``` java
-    BoucingMenu.make(getBaseContext(),main_layout,R.layout.menu_boucing).show();
-```
-
-### 引申
-本例最主要的是如何得到`DecorView`，通过android源码我们知道`DecorView`是`Activity`布局中最外层的一个布局，而我们真正意义上的xml中书写的布局都是它的Child<\br>
-
-``` java
- /**
-     *找到DecorView的根布局
-     * @param view
-     */
-    private ViewGroup findSuitableParent(View view){
-        ViewGroup fallBack = null;
-        do{
-            if (view instanceof FrameLayout){
-                if (view.getId() == android.R.id.content){
-                    return (ViewGroup)view;
-                }else{
-                    fallBack = (ViewGroup) view;
-                }
-            }
-            if (view != null){
-                ViewParent parent = view.getParent();
-                view = parent instanceof View ? (View) parent : null;
-            }
-        }while (view != null);
-        return fallBack;
-    }
-```
-    
-画出的曲线用到的是贝塞尔曲线，画曲线那么这里利用了`path.quarTo();`,想见更多关于贝塞尔曲线，那么请移步</br>
---[Bezier--https://github.com/heavenxue/AsLixueAndroids/blob/master/lixuelib/src/main/java/com/aibei/lixue/lixuelib/view/PathBezier.java](https://github.com/heavenxue/AsLixueAndroids/blob/master/lixuelib/src/main/java/com/aibei/lixue/lixuelib/view/PathBezier.java)
-
- <video id="video" controls="" preload="none" poster="http://media.w3.org/2010/05/sintel/poster.png">
-       <source id="mp4" src="http://media.w3.org/2010/05/sintel/trailer.mp4" type="video/mp4">
-     </video>   
