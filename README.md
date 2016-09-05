@@ -10,5 +10,4 @@
 
 ### 效果图：
 ![github](https://github.com/heavenxue/BouncingMenu/raw/master/doc/shoot.png "github")
-![github](https://github.com/heavenxue/BouncingMenu/raw/master/doc/BouceProgressBar.gif "github")
-
+![BouceProgressBar.gif](http://upload-images.jianshu.io/upload_images/1628151-9a7141647fcf97ea.gif?imageMogr2/auto-orient/strip)
