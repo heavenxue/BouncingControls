@@ -25,5 +25,4 @@ public class BoProgressBarActivityDemo extends AppCompatActivity {
             }
         });
     }
-
 }
