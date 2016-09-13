@@ -32,7 +32,8 @@ public class BouceBallShoopShoop extends View{
     private List<Integer> raduiss = new ArrayList<>();
     private long current = System.currentTimeMillis();
     private long mLastCreateTime;
-    private long mSpeed = 100;
+    private long mSpeed = 60;
+    private long duration = 1000;
 
     private Handler mHandler = new Handler();
     private Runnable runnable = new Runnable() {
@@ -43,7 +44,7 @@ public class BouceBallShoopShoop extends View{
                 return;
             }
             //什么时候添加
-            if (System.currentTimeMillis() - current > 1000){
+            if (System.currentTimeMillis() - current > duration){
                 raduiss.add(xiuBitmap.getWidth()/2);
                 current = System.currentTimeMillis();
             }
@@ -51,6 +52,8 @@ public class BouceBallShoopShoop extends View{
             for (int i = 0;i < raduiss.size();i ++){
                 raduiss.set(i,raduiss.get(i) + 10);
             }
+
+
 
             //当半径大于屏幕的时候移除
             Iterator<Integer> it = raduiss.iterator();
@@ -112,14 +115,19 @@ public class BouceBallShoopShoop extends View{
         int cy = getHeight()/2;
 
         for (int i =0;i < raduiss.size();i ++){
-            float percent = (System.currentTimeMillis() - current) * 1.0f / 1000;
+//            if (System.currentTimeMillis() - current < duration){
+                float percent = (System.currentTimeMillis() - current) * 1.0f / duration;
 //            float percent = (raduiss.get(i) - xiuBitmap.getWidth()/2)/(getWidth()/2 - xiuBitmap.getWidth()/2);
 //            int alpths = 255 - 255*((raduiss.get(i) - xiuBitmap.getWidth()/2)/(getWidth()/2-xiuBitmap.getWidth()/2));
-            int alpths = 255 - (int) (255 * percent);
-            Log.d("abc","alpths:" + alpths);
+                int alpths = (int) (255 *(1 - percent));
+                Log.d("abc","alpths:" + alpths);
 
-            mPaint.setAlpha(alpths);
-            canvas.drawCircle(cx,cy,raduiss.get(i),mPaint);
+                mPaint.setAlpha(alpths);
+                canvas.drawCircle(cx,cy,raduiss.get(i),mPaint);
+//            }else{
+//                raduiss.remove(i);
+//            }
+
         }
         //画中间的图片
         canvas.drawBitmap(xiuBitmap,x,y,null);
