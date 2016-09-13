@@ -18,7 +18,13 @@
 - **动画美感** ：利用了属性动画。
 - **性能** ：利用surfaceView性能更好(高效绘制，具有缓冲性能)
 
+#### BouceBallShoopShoop
+
+>**仿支付宝咻一咻控件**不断画圆，向外扩散，透明度有到无变化。特点概述：
+
+
 
 ### 效果图：
 ![github](https://github.com/heavenxue/BouncingMenu/raw/master/doc/shoot.png "github")
 ![BouceProgressBar.gif](http://upload-images.jianshu.io/upload_images/1628151-9a7141647fcf97ea.gif?imageMogr2/auto-orient/strip)
+![BallShoop.gif](https://github.com/heavenxue/BouncingControls/raw/master/doc/BallShoop.gif)
