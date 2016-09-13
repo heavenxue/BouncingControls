@@ -7,7 +7,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.os.Build;
 import android.os.Handler;
 import android.util.AttributeSet;
@@ -26,9 +25,7 @@ import java.util.List;
  * Created by Administrator on 2016/9/12.
  */
 public class BouceBallShoopShoop extends View{
-    private Canvas mCanvas;//画布
     private Paint mPaint;//画笔
-    private Path mPath;//路径
     private int smallRaduias = 30;//最里面小圆的半径
 
     private Bitmap xiuBitmap;
@@ -97,7 +94,6 @@ public class BouceBallShoopShoop extends View{
         mPaint = new Paint();
         mPaint.setAntiAlias(true);//消除锯齿
         mPaint.setColor(Color.parseColor("#155c7c"));
-        mPath = new Path();
         xiuBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.xiu);
         smallRaduias = xiuBitmap.getWidth()/2;
         raduiss.add(smallRaduias);
@@ -107,8 +103,8 @@ public class BouceBallShoopShoop extends View{
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
-        mPath.reset();
-        //画最里面的小圆
+
+        //画圆
         int x = getWidth()/2 - xiuBitmap.getWidth()/2;
         int y = getHeight()/2 - xiuBitmap.getHeight()/2;
 
@@ -125,8 +121,8 @@ public class BouceBallShoopShoop extends View{
             mPaint.setAlpha(alpths);
             canvas.drawCircle(cx,cy,raduiss.get(i),mPaint);
         }
+        //画中间的图片
         canvas.drawBitmap(xiuBitmap,x,y,null);
-        start();
     }
 
     public void start(){
